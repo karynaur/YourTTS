@@ -67,9 +67,9 @@ use_griffin_lim = False
 
 #define args
 parser = argparse.ArgumentParser(description='Synthesize text to speech')
-parser.add_argument('--text', type=str, default="Synthesized text" required=True, help='Text to synthesize')
+parser.add_argument('--text', type=str, default="Synthesized text", required=True, help='Text to synthesize')
 parser.add_argument('--ref_folder', type=str, required=True, help='Reference audio folder')
-parser.add_argument('--out_folder', type=str, default='out/' required=True, help='Output audio folder')
+parser.add_argument('--out_folder', type=str, default='out/', required=True, help='Output audio folder')
 parser.add_argument('--length_scale', type=float, default=1.6, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--inference_noise_scale', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--inference_noise_scale_dp', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
@@ -84,6 +84,7 @@ model.inference_noise_scale_dp = args.inference_noise_scale_dp
 
 reference_emb = compute_embeddings(args.ref_folder)
 
+print("Generating Audio")
 wav, alignment, _, _ = synthesis(
                     model,
                     args.text,
@@ -98,9 +99,7 @@ wav, alignment, _, _ = synthesis(
                     use_griffin_lim=True,
                     do_trim_silence=False,
                 ).values()
-print("Generated Audio")
-IPython.display.display(Audio(wav, rate=ap.sample_rate))
-file_name = text.replace(" ", "_")
+file_name = args.text.replace(" ", "_")
 file_name = file_name.translate(str.maketrans('', '', string.punctuation.replace('_', ''))) + '.wav'
 out_path = os.path.join(args.out_folder, file_name)
 print(" Saving output to {}".format(out_path))

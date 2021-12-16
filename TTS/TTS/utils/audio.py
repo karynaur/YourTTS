@@ -233,7 +233,7 @@ class AudioProcessor(object):
         do_amp_to_db_linear=True,
         do_amp_to_db_mel=True,
         stats_path=None,
-        verbose=True,
+        verbose=False,
         **_,
     ):
 
