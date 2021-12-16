@@ -9,7 +9,7 @@ from get_speaker_embds import compute_embeddings
 from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.text.symbols import make_symbols, phonemes, symbols
 from TTS.utils.audio import AudioProcessor
-
+import time
 
 from TTS.tts.models import setup_model
 from TTS.config import load_config
@@ -58,6 +58,7 @@ model.load_state_dict(model_weights)
 
 
 model.eval()
+print(f"Using {"cuda" if USE_CUDA else "cpu"} for inference")
 
 if USE_CUDA:
     model = model.cuda()
@@ -69,7 +70,7 @@ use_griffin_lim = False
 parser = argparse.ArgumentParser(description='Synthesize text to speech')
 parser.add_argument('--text', type=str, default="Synthesized text", required=True, help='Text to synthesize')
 parser.add_argument('--ref_folder', type=str, required=True, help='Reference audio folder')
-parser.add_argument('--out_folder', type=str, default='out/', required=True, help='Output audio folder')
+parser.add_argument('--out_folder', type=str, default='out/', help='Output audio folder')
 parser.add_argument('--length_scale', type=float, default=1.6, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--inference_noise_scale', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--inference_noise_scale_dp', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
@@ -82,9 +83,12 @@ model.length_scale = args.length_scale
 model.inference_noise_scale = args.inference_noise_scale
 model.inference_noise_scale_dp = args.inference_noise_scale_dp
 
+start = time.time()
 reference_emb = compute_embeddings(args.ref_folder)
+print("Speaker Reference embedding computed in {} seconds".format(time.time() - start))
 
-print("Generating Audio")
+print("Generating Audio for text: {}".format(args.text))
+start = time.time()
 wav, alignment, _, _ = synthesis(
                     model,
                     args.text,
@@ -99,8 +103,9 @@ wav, alignment, _, _ = synthesis(
                     use_griffin_lim=True,
                     do_trim_silence=False,
                 ).values()
+print("Audio generated in {} seconds".format(time.time() - start))  
 file_name = args.text.replace(" ", "_")
 file_name = file_name.translate(str.maketrans('', '', string.punctuation.replace('_', ''))) + '.wav'
 out_path = os.path.join(args.out_folder, file_name)
-print(" Saving output to {}".format(out_path))
+print("Saving output to {}".format(out_path))
 ap.save_wav(wav, out_path)
