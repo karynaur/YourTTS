@@ -58,10 +58,6 @@ model.load_state_dict(model_weights)
 
 
 model.eval()
-print(f"Using {"cuda" if USE_CUDA else "cpu"} for inference")
-
-if USE_CUDA:
-    model = model.cuda()
 
 # synthesize voice
 use_griffin_lim = False
@@ -75,8 +71,18 @@ parser.add_argument('--length_scale', type=float, default=1.6, help='scaler for 
 parser.add_argument('--inference_noise_scale', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--inference_noise_scale_dp', type=float, default=0.3, help='scaler for the duration predictor. The larger it is, the slower the speech')
 parser.add_argument('--language_id', type=int, default=0, help='Language id')
+parser.add_argument('--cuda', action='store_true', help='Use cuda')
 args = parser.parse_args()
 
+
+
+if args.cuda:
+    cuda_string = "cuda" 
+    model = model.cuda()
+else:
+    cuda_string = "cpu"
+
+print(f"Using {cuda_string} for inference")
 os.makedirs(args.out_folder, exist_ok=True)
 
 model.length_scale = args.length_scale
