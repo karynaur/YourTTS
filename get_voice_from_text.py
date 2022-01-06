@@ -5,6 +5,10 @@ import argparse
 import json
 import numpy as np
 import torch
+import sys
+TTS_PATH = "TTS/"
+
+sys.path.append(TTS_PATH) # set this if TTS is not installed globally
 from get_speaker_embds import compute_embeddings
 from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.text.symbols import make_symbols, phonemes, symbols

@@ -1,5 +1,4 @@
 pip install -q -e TTS/
-pip install -q -e TTS/
 gdown --id 1-PfXD66l1ZpsZmJiC-vhL055CDSugLyP
 gdown --id 1_Vb2_XHqcC0OcvRF82F883MTxfTRmerg
 gdown --id 1SZ9GE0CBM-xGstiXH2-O2QWdmSXsBKdC -O speakers.json

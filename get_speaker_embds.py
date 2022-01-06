@@ -3,12 +3,8 @@ from pydub import AudioSegment
 import librosa
 import argparse
 import torch
-import sys
 import subprocess
 import glob
-TTS_PATH = "TTS/"
-
-sys.path.append(TTS_PATH) # set this if TTS is not installed globally
 
 def compute_embeddings(folder):
     CONFIG_SE_PATH = "config_se.json"
